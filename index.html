@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard de Productividad</title>
+  <link rel="icon" type="image/png" href="assets/imagenes/logo.png" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .table td,
+    .table th {
+      color: white
+    }
+
+    .table th {
+      color: #f8f9fa
+    }
+  </style>
+</head>
+
+<body class="bg-dark text-light"
+  style="background-image:url('assets/imagenes/fondo.gif');background-size:cover;background-position:center;">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <span class="navbar-brand d-flex align-items-center">
+        <img src="assets/imagenes/logo.png" alt="Logo" width="30" height="30" class="me-2">Dashboard
+      </span>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTabs">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-center" id="navbarTabs">
+        <div class="navbar-nav gap-2">
+          <button class="btn btn-outline-light" data-tab="reloj">🕒 Reloj</button>
+          <button class="btn btn-outline-light" data-tab="presupuesto">💰 Presupuesto</button>
+          <button class="btn btn-outline-light" data-tab="notas">📝 Notas</button>
+          <button class="btn btn-outline-light" data-tab="conversor">🔄 Conversor</button>
+          <button class="btn btn-outline-light" data-tab="rut">🔍 RUT</button>
+          <button class="btn btn-outline-light" data-tab="juego">🎯 Juego</button>
+          <button class="btn btn-outline-light" data-tab="cronometro">⏱️ Cronómetro</button>
+          <button class="btn btn-outline-light" data-tab="hora-ciudad">🕰️ Hora por Ciudad</button>
+          <button class="btn btn-outline-light" data-tab="salida-trabajo">⏳ Salida del Trabajo</button>
+          <button class="btn btn-outline-light" data-tab="pomodoro">⏳ Gestion de tareas</button>
+          <button class="btn btn-outline-light" data-tab="agenda">📇 Agenda de Contactos</button>
+          <button class="btn btn-outline-light" data-tab="snake">🐍 Juego de Snake</button>
+          <button class="btn btn-outline-light" data-tab="calendario">📅 Agenda de citas</button>
+
+        </div>
+      </div>
+    </div>
+  </nav>
+  <div id="relojFijo"
+    class="position-fixed top-0 start-50 translate-middle-x bg-light text-primary fw-bold px-3 py-1 rounded shadow-sm"
+    style="z-index:1050;margin-top:0.5rem;">
+    <span id="relojFijoDisplay"></span>
+  </div>
+  <main class="container mt-4">
+    <section id="reloj" class="tab active">
+      <h2>🕒 Reloj Actual</h2>
+      <p id="relojDisplay" class="fs-3 text-primary"></p>
+    </section>
+    <div class="text-center mt-2"><img src="assets/imagenes/planet.gif" alt="Planeta girando" width="120"
+        height="120" /></div>
+    <section id="presupuesto" class="tab">
+      <h2>💰 Presupuesto</h2>
+      <form id="productForm" class="row g-2 mb-3">
+        <div class="col-md-5"><input type="text" id="productName" class="form-control" placeholder="Nombre del producto"
+            required /></div>
+        <div class="col-md-4"><input type="number" id="productPrice" class="form-control" placeholder="Precio"
+            required /></div>
+        <div class="col-md-3 d-grid"><button type="submit" class="btn btn-success">Agregar</button></div>
+      </form>
+      <input type="number" id="budget" class="form-control mb-2" placeholder="Presupuesto total" />
+      <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>Producto</th>
+            <th>Precio</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="productTableBody"></tbody>
+      </table>
+      <p class="fw-bold">Total: $<span id="totalAmount">0</span> | Restante: $<span id="remainingAmount">0</span></p>
+    </section>
+    <section id="notas" class="tab">
+      <h2>📝 Notas</h2>
+      <form id="noteForm" class="mb-3">
+        <input type="text" id="noteTitle" class="form-control mb-2" placeholder="Título" required />
+        <textarea id="noteContent" class="form-control mb-2" placeholder="Contenido" required></textarea>
+        <button type="submit" class="btn btn-primary">Guardar Nota</button>
+      </form>
+      <div id="notesList" class="row row-cols-1 row-cols-md-2 g-3"></div>
+    </section>
+    <section id="conversor" class="tab">
+      <h2>🔄 Conversor de Unidades</h2>
+      <div class="row g-2 align-items-center">
+        <div class="col-md-3"><select id="tipoConversion" class="form-select">
+            <option value="metrico">Métrico</option>
+            <option value="peso">Peso</option>
+            <option value="velocidad">Velocidad</option>
+          </select></div>
+        <div class="col-md-3"><input type="number" id="inputValue" class="form-control" placeholder="Valor" /></div>
+        <div class="col-md-2"><select id="fromUnit" class="form-select"></select></div>
+        <div class="col-md-2"><select id="toUnit" class="form-select"></select></div>
+      </div>
+      <p class="mt-3 fw-bold" id="result">Resultado: -</p>
+    </section>
+    <section id="rut" class="tab">
+      <h2>🔍 Validador de RUT Chileno</h2>
+      <form id="rutForm">
+        <input type="text" id="rutInput" class="form-control w-50" placeholder="Ej: 12345678K" required />
+        <button type="submit" class="btn btn-primary mt-2">Validar</button>
+      </form>
+      <p id="rutResultado" class="mt-2"></p>
+    </section>
+    <section id="juego" class="tab">
+      <h2>🎯 Juego Par o Impar</h2>
+      <p id="gameInfo" class="fw-semibold">Haz clic en globos pares o impares</p>
+      <div id="operationDisplay" class="mt-2 fw-bold"></div>
+      <div id="secondOperationDisplay" class="mt-2 fw-bold"></div>
+      <p>Puntaje: <span id="score">0</span></p>
+      <div id="balloonArea" class="position-relative border rounded overflow-hidden"
+        style="height:300px;background:#e0f7fa;"></div>
+    </section>
+    <section id="cronometro" class="tab">
+      <h2>⏱️ Cronómetro</h2>
+      <p id="cronometroDisplay" class="fs-3 text-success">00:00</p>
+      <button id="startCronometro" class="btn btn-primary">Iniciar</button>
+      <button id="pauseCronometro" class="btn btn-warning">Pausar</button>
+      <button id="resetCronometro" class="btn btn-danger">Reiniciar</button>
+    </section>
+    <section class="mt-4 d-none" id="temporizadorSection">
+      <h2>⏳ Temporizador</h2>
+      <div class="row g-2">
+        <div class="col-6 col-md-3"><input type="number" id="minutos" class="form-control" placeholder="Minutos" />
+        </div>
+        <div class="col-6 col-md-3"><input type="number" id="segundos" class="form-control" placeholder="Segundos" />
+        </div>
+      </div>
+      <p id="temporizadorDisplay" class="mt-2 fs-4 text-danger">00:00</p>
+      <button id="startTemporizador" class="btn btn-success">Iniciar</button>
+      <button id="pauseTemporizador" class="btn btn-warning">Pausar</button>
+      <button id="resetTemporizador" class="btn btn-danger">Reiniciar</button>
+    </section>
+    <section id="hora-ciudad" class="tab">
+      <h2>🕰️ Hora por Ciudad</h2>
+      <form id="cityForm" onsubmit="event.preventDefault();mostrarHora();">
+        <select id="ciudad" class="form-select mb-2"></select>
+        <button type="submit" class="btn btn-info">Obtener Hora</button>
+      </form>
+      <p id="horaCiudad" class="mt-2"></p>
+    </section>
+    <section id="salida-trabajo" class="tab">
+      <h2>⏳ Salida del Trabajo</h2>
+      <label for="targetTime" class="form-label">Hora de salida:</label>
+      <div class="input-group mb-3 w-50">
+        <input type="time" id="targetTime" class="form-control">
+        <button id="startCountdown" class="btn btn-success">Iniciar cuenta regresiva</button>
+      </div>
+      <p id="countdownDisplay" class="fs-3 text-warning">00:00:00</p>
+      <audio id="countdownSound" src="assets/audio/Bleep-SoundBible.com-1927126940.mp3" preload="auto"></audio>
+    </section>
+
+    <section id="pomodoro" class="tab">
+      <h2>Gestion de tareas</h2>
+
+      <!-- Formulario para agregar tareas -->
+      <form id="taskForm" class="mb-3">
+        <input type="text" id="taskName" class="form-control mb-2" placeholder="Añadir tarea" required />
+        <button type="submit" class="btn btn-primary">Añadir Tarea</button>
+      </form>
+
+      <!-- Tabla de tareas -->
+      <h4>Lista de Tareas</h4>
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Tarea</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="taskTableBody"></tbody>
+      </table>
+
+      <!-- Configuración del Pomodoro -->
+      <h4>Configuración del Pomodoro</h4>
+      <div class="row">
+        <div class="col-6">
+          <label for="pomodoroDuration" class="form-label">Duración del Pomodoro (minutos)</label>
+          <input type="number" id="pomodoroDuration" class="form-control" min="1" value="25" />
+        </div>
+        <div class="col-6">
+          <label for="shortBreakDuration" class="form-label">Pausa corta (minutos)</label>
+          <input type="number" id="shortBreakDuration" class="form-control" min="1" value="5" />
+        </div>
+      </div>
+
+      <div class="row mt-3">
+        <div class="col-6">
+          <label for="longBreakDuration" class="form-label">Pausa larga (minutos)</label>
+          <input type="number" id="longBreakDuration" class="form-control" min="1" value="15" />
+        </div>
+      </div>
+
+      <!-- Temporizador Pomodoro -->
+      <div>
+        <h4>Pomodoro</h4>
+        <p id="pomodoroTimer" class="fs-3 text-success">25:00</p>
+        <button id="startPomodoro" class="btn btn-success">Iniciar Pomodoro</button>
+        <button id="pausePomodoro" class="btn btn-warning">Pausar</button>
+        <button id="resetPomodoro" class="btn btn-danger">Reiniciar</button>
+      </div>
+
+      <p id="pomodoroStatus" class="mt-3">Estado: En pausa</p>
+    </section>
+
+    <section id="agenda" class="tab">
+      <h2>📇 Agenda de Contactos</h2>
+
+      <!-- Formulario para agregar un contacto -->
+      <form id="contactForm" class="mb-3">
+        <input type="text" id="contactName" class="form-control mb-2" placeholder="Nombre" required />
+        <input type="tel" id="contactPhone" class="form-control mb-2" placeholder="Teléfono" required />
+        <input type="email" id="contactEmail" class="form-control mb-2" placeholder="Correo Electrónico" required />
+        <input type="text" id="contactAddress" class="form-control mb-2" placeholder="Dirección" required />
+        <button type="submit" class="btn btn-primary">Añadir Contacto</button>
+      </form>
+
+      <!-- Tabla de contactos -->
+      <h4>Lista de Contactos</h4>
+      <table class="table table-bordered table-hover">
+        <thead class="table-dark">
+          <tr>
+            <th>Nombre</th>
+            <th>Teléfono</th>
+            <th>Email</th>
+            <th>Dirección</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="contactTableBody"></tbody>
+      </table>
+    </section>
+
+
+    <section id="snake" class="tab">
+      <h2>🐍 Juego de Snake</h2>
+      <canvas id="snakeGame" width="400" height="400" style="border: 2px solid #000;"></canvas>
+      <p>Puntaje: <span id="snakeScore">0</span></p>
+    </section>
+
+    <section id="calendario" class="tab">
+      <h2>📅 Calendario de Eventos</h2>
+      <form id="eventForm" class="mb-3">
+        <input type="text" id="eventName" class="form-control mb-2" placeholder="Nombre del evento" required />
+        <input type="date" id="eventDate" class="form-control mb-2" required />
+        <input type="time" id="eventTime" class="form-control mb-2" required />
+        <button type="submit" class="btn btn-primary">Agregar Evento</button>
+      </form>
+
+      <table class="table table-hover table-bordered">
+        <thead class="table-dark">
+          <tr>
+            <th>Nombre</th>
+            <th>Fecha</th>
+            <th>Hora</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="eventTableBody"></tbody>
+      </table>
+
+    </section>
+<footer style="text-align: center; padding: 10px; background-color: #2c3e50; color: #ecf0f1; font-family: Arial, sans-serif; font-size: 14px;">
+    <p><strong>FERNANDO VARGAS 2025</strong> | Desarrollador Web | Técnico en Computación e Informática - Mención en Programación | &copy; 2025</p>
+    <p><em>"Transformando ideas en soluciones digitales."</em></p>
+</footer>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" defer></script>
+    <script src="js/reloj.js" defer></script>
+    <script src="js/presupuesto.js" defer></script>
+    <script src="js/notas.js" defer></script>
+    <script src="js/conversor.js" defer></script>
+    <script src="js/rut.js" defer></script>
+    <script src="js/juego.js" defer></script>
+    <script src="js/cronometro.js" defer></script>
+    <script src="js/hora-ciudad.js" defer></script>
+    <script src="js/cuenta-regresiva.js" defer></script>
+    <script src="js/gestion-de-tareas.js" defer></script>
+    <script src="js/agenda.js" defer></script>
+    <script src="js/snake.js" defer></script>
+    <script src="js/calendario.js" defer></script>
+
+
+    <script src="js/app.js" defer></script>
+</body>
+
+</html>
