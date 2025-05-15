@@ -88,17 +88,25 @@ function drawFruit() {
   ctx.fillRect(fruit.x * scale, fruit.y * scale, scale, scale);
 }
 
+// Mostrar mensaje "Game Over" en el canvas
+function drawGameOverMessage() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.6)";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+  ctx.fillStyle = "white";
+  ctx.font = "30px Arial";
+  ctx.textAlign = "center";
+  ctx.fillText("Game Over", canvas.width / 2, canvas.height / 2);
+}
+
 // Actualizar el estado del juego
 function updateGame() {
   if (!gameStarted) return;
 
   snake.move();
   if (snake.checkCollision()) {
-    alert("Game Over! Tu puntaje: " + score);
     gameStarted = false;
     clearInterval(gameInterval);
-    score = 0;
-    document.getElementById("snakeScore").innerText = score;
+    drawGameOverMessage(); // Mostrar mensaje en el canvas
     return;
   }
 
