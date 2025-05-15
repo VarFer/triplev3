@@ -7,18 +7,18 @@ const columns = canvas.width / scale;
 let snake;
 let fruit;
 let score = 0;
-let gameStarted = false;  // Variable para verificar si el juego ha comenzado
+let gameStarted = false;
+let gameInterval;
 
 // Constructor de la serpiente
 function Snake() {
-  this.body = [{x: 5, y: 5}];  // Posición inicial de la serpiente
-  this.direction = "right";  // Dirección inicial
+  this.body = [{x: 5, y: 5}];
+  this.direction = "right";
 
   this.move = function() {
     let head = this.body[0];
     let newHead;
 
-    // Movimiento basado en la dirección
     if (this.direction === "right") {
       newHead = {x: head.x + 1, y: head.y};
     } else if (this.direction === "left") {
@@ -29,20 +29,17 @@ function Snake() {
       newHead = {x: head.x, y: head.y + 1};
     }
 
-    // Insertar la nueva cabeza al principio del array
     this.body.unshift(newHead);
 
-    // Comprobar si la serpiente come la fruta
     if (newHead.x === fruit.x && newHead.y === fruit.y) {
       score += 10;
       document.getElementById("snakeScore").innerText = score;
-      createFruit();  // Crear una nueva fruta
+      createFruit();
     } else {
-      this.body.pop();  // Eliminar la última parte de la serpiente si no hay colisión
+      this.body.pop();
     }
   };
 
-  // Cambiar la dirección con las teclas de flecha
   this.changeDirection = function(event) {
     if (event.keyCode === 37 && this.direction !== "right") {
       this.direction = "left";
@@ -55,23 +52,19 @@ function Snake() {
     }
   };
 
-  // Método para dibujar la serpiente en el canvas
   this.draw = function() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);  // Limpiar el canvas antes de dibujar
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.fillStyle = "green";
     this.body.forEach(function(segment) {
-      ctx.fillRect(segment.x * scale, segment.y * scale, scale, scale);  // Dibujar cada segmento de la serpiente
+      ctx.fillRect(segment.x * scale, segment.y * scale, scale, scale);
     });
   };
 
-  // Comprobar colisiones
   this.checkCollision = function() {
     let head = this.body[0];
-    // Colisión con las paredes
     if (head.x < 0 || head.x >= columns || head.y < 0 || head.y >= rows) {
       return true;
     }
-    // Colisión con la propia serpiente
     for (let i = 1; i < this.body.length; i++) {
       if (head.x === this.body[i].x && head.y === this.body[i].y) {
         return true;
@@ -81,61 +74,67 @@ function Snake() {
   };
 }
 
-// Generador de frutas
+// Crear fruta en una posición aleatoria
 function createFruit() {
-  let x = Math.floor(Math.random() * columns);
-  let y = Math.floor(Math.random() * rows);
-  fruit = {x: x, y: y};
+  fruit = {
+    x: Math.floor(Math.random() * columns),
+    y: Math.floor(Math.random() * rows)
+  };
 }
 
-// Dibujar la fruta
+// Dibujar la fruta en el canvas
 function drawFruit() {
   ctx.fillStyle = "red";
   ctx.fillRect(fruit.x * scale, fruit.y * scale, scale, scale);
 }
 
-// Función de actualización del juego
+// Actualizar el estado del juego
 function updateGame() {
-  if (!gameStarted) return;  // No empezar el juego hasta que se haya iniciado
+  if (!gameStarted) return;
 
-  snake.move();  // Mover la serpiente
+  snake.move();
   if (snake.checkCollision()) {
     alert("Game Over! Tu puntaje: " + score);
-    gameStarted = false;  // Detener el juego
+    gameStarted = false;
+    clearInterval(gameInterval);
     score = 0;
     document.getElementById("snakeScore").innerText = score;
     return;
   }
 
-  snake.draw();  // Dibujar la serpiente
-  drawFruit();   // Dibujar la fruta
+  snake.draw();
+  drawFruit();
 }
 
-// Función para iniciar el juego
+// Iniciar el juego
 function startGame() {
-  if (gameStarted) return;  // Evitar que el juego se inicie si ya está en curso
+  if (gameStarted) return;
 
   snake = new Snake();
   createFruit();
-  gameStarted = true;  // Indicar que el juego ha comenzado
+  gameStarted = true;
+  clearInterval(gameInterval); // Por si acaso hay uno corriendo
+  gameInterval = setInterval(updateGame, 200);
 
-  // Iniciar el ciclo de actualización utilizando un bucle simple
-  setInterval(updateGame, 200);  // Cambié el intervalo a 200ms para reducir la velocidad
-
-  // Escuchar las teclas para cambiar la dirección
-  document.addEventListener("keydown", function(event) {
-    snake.changeDirection(event);
-  });
+  document.removeEventListener("keydown", handleDirection);
+  document.addEventListener("keydown", handleDirection);
 }
 
-// Función para reiniciar el juego
+// Manejador para cambiar dirección
+function handleDirection(event) {
+  if (snake) {
+    snake.changeDirection(event);
+  }
+}
+
+// Reiniciar el juego presionando cualquier tecla si está detenido
 function restartGame() {
   document.addEventListener("keydown", function(event) {
     if (!gameStarted) {
       startGame();
     }
-  });
+  }, { once: true }); // Solo una vez hasta el siguiente Game Over
 }
 
-// Iniciar el juego cuando se presiona cualquier tecla (para evitar que se inicie al cargar la página)
+// Ejecutar al cargar
 restartGame();
